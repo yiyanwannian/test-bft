@@ -44,7 +44,7 @@ func main() {
 		fmt.Printf("before update balance: %s\n", balance.String())
 
 		// 3. update the balance in the db
-		if err = db.Put(underlayDBBalanceKey, []byte("1000"), nil); err != nil {
+		if err = db.Put(underlayDBBalanceKey, []byte("0"), nil); err != nil {
 			continue
 			panic(fmt.Sprintf("update balance failed, error: %s", err))
 		}
@@ -59,7 +59,7 @@ func main() {
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
 		fmt.Printf("after update balance: %s\n", balance.String())
-		if balance.Int64() != 1000 {
+		if balance.Int64() != 0 {
 			continue
 			panic("update balance failed")
 		}
