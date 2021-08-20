@@ -20,17 +20,17 @@ func main() {
 	}
 
 	// 1. open db and init key
-	db, err := leveldb.OpenFile(".", nil)
+	db, err := leveldb.OpenFile(dbPath, nil)
 	if err != nil {
 		panic(err)
 	}
-	balanceKey := fmt.Sprintf("B/%s", "accountAddr")
+	balanceKey := fmt.Sprintf("B/%s", accAddr)
 	underlayDBBalanceKey := append(append([]byte("SYSTEM_CONTRACT_DPOS_ERC20"), '#'), balanceKey...)
 
 	// 2. get the balance from db
 	val, err := db.Get(underlayDBBalanceKey, nil)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("get balance failed, error: %s", err))
 	}
 	balance, ok := big.NewInt(0).SetString(string(val), 10)
 	if !ok {
@@ -40,12 +40,12 @@ func main() {
 
 	// 3. update the balance in the db
 	if err = db.Put(underlayDBBalanceKey, []byte("1000"), nil); err != nil {
-		panic(err)
+		panic(fmt.Sprintf("update balance failed, error: %s", err))
 	}
 
 	// 4. check update balance
 	if val, err = db.Get(underlayDBBalanceKey, nil); err != nil {
-		panic(err)
+		panic(fmt.Sprintf("get balance failed, error: %s", err))
 	}
 	if balance, ok = big.NewInt(0).SetString(string(val), 10); !ok {
 		panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
