@@ -1,10 +1,11 @@
 package main
 
 import (
+	"crypto/sha256"
 	"flag"
 	"fmt"
-	"math/big"
 	"github.com/syndtr/goleveldb/leveldb"
+	"math/big"
 )
 
 func main() {
@@ -20,38 +21,49 @@ func main() {
 	}
 
 	// 1. open db and init key
-	db, err := leveldb.OpenFile(dbPath, nil)
-	if err != nil {
-		panic(err)
-	}
-	balanceKey := fmt.Sprintf("B/%s", accAddr)
-	underlayDBBalanceKey := append(append([]byte("SYSTEM_CONTRACT_DPOS_ERC20"), '#'), balanceKey...)
+	for i := 0; i <= 9; i++{
+		db, err := leveldb.OpenFile(fmt.Sprintf("%s/%d", dbPath, i), nil)
+		if err != nil {
+			continue
+			//panic(err)
+		}
+		balanceKey := fmt.Sprintf("B/%s", accAddr)
+		underlayDBBalanceKey := append(append([]byte("SYSTEM_CONTRACT_DPOS_ERC20"), '#'), balanceKey...)
+		fmt.Printf("key: %s, hash: %x", string(underlayDBBalanceKey), sha256.Sum256(underlayDBBalanceKey))
 
-	// 2. get the balance from db
-	val, err := db.Get(underlayDBBalanceKey, nil)
-	if err != nil {
-		panic(fmt.Sprintf("get balance failed, error: %s", err))
-	}
-	balance, ok := big.NewInt(0).SetString(string(val), 10)
-	if !ok {
-		panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
-	}
-	fmt.Printf("before update balance: %s", balance.String())
+		// 2. get the balance from db
+		val, err := db.Get(underlayDBBalanceKey, nil)
+		if err != nil {
+			continue
+			panic(fmt.Sprintf("get balance failed, error: %s", err))
+		}
+		balance, ok := big.NewInt(0).SetString(string(val), 10)
+		if !ok {
+			continue
+			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
+		}
+		fmt.Printf("before update balance: %s", balance.String())
 
-	// 3. update the balance in the db
-	if err = db.Put(underlayDBBalanceKey, []byte("1000"), nil); err != nil {
-		panic(fmt.Sprintf("update balance failed, error: %s", err))
+		// 3. update the balance in the db
+		if err = db.Put(underlayDBBalanceKey, []byte("1000"), nil); err != nil {
+			continue
+			panic(fmt.Sprintf("update balance failed, error: %s", err))
+		}
+
+		// 4. check update balance
+		if val, err = db.Get(underlayDBBalanceKey, nil); err != nil {
+			continue
+			panic(fmt.Sprintf("get balance failed, error: %s", err))
+		}
+		if balance, ok = big.NewInt(0).SetString(string(val), 10); !ok {
+			continue
+			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
+		}
+		fmt.Printf("after update balance: %s", balance.String())
+		if balance.Int64() != 1000 {
+			continue
+			panic("update balance failed")
+		}
 	}
 
-	// 4. check update balance
-	if val, err = db.Get(underlayDBBalanceKey, nil); err != nil {
-		panic(fmt.Sprintf("get balance failed, error: %s", err))
-	}
-	if balance, ok = big.NewInt(0).SetString(string(val), 10); !ok {
-		panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
-	}
-	fmt.Printf("after update balance: %s", balance.String())
-	if balance.Int64() != 1000 {
-		panic("update balance failed")
-	}
 }
