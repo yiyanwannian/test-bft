@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha256"
 	"flag"
 	"fmt"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -29,7 +28,7 @@ func main() {
 		}
 		balanceKey := fmt.Sprintf("B/%s", accAddr)
 		underlayDBBalanceKey := append(append([]byte("SYSTEM_CONTRACT_DPOS_ERC20"), '#'), balanceKey...)
-		fmt.Printf("key: %s, hash: %x", string(underlayDBBalanceKey), sha256.Sum256(underlayDBBalanceKey))
+		//fmt.Printf("key: %s, hash: %x\n", string(underlayDBBalanceKey), sha256.Sum256(underlayDBBalanceKey))
 
 		// 2. get the balance from db
 		val, err := db.Get(underlayDBBalanceKey, nil)
@@ -42,7 +41,7 @@ func main() {
 			continue
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
-		fmt.Printf("before update balance: %s", balance.String())
+		fmt.Printf("before update balance: %s\n", balance.String())
 
 		// 3. update the balance in the db
 		if err = db.Put(underlayDBBalanceKey, []byte("1000"), nil); err != nil {
@@ -59,7 +58,7 @@ func main() {
 			continue
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
-		fmt.Printf("after update balance: %s", balance.String())
+		fmt.Printf("after update balance: %s\n", balance.String())
 		if balance.Int64() != 1000 {
 			continue
 			panic("update balance failed")
