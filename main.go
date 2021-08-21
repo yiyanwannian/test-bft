@@ -25,8 +25,8 @@ func main() {
 	for i := 0; i <= 9; i++{
 		db, err := leveldb.OpenFile(fmt.Sprintf("%s/%d", dbPath, i), nil)
 		if err != nil {
+			fmt.Println("open db err: ", err)
 			continue
-			//panic(err)
 		}
 		balanceKey := fmt.Sprintf("B/%s", accAddr)
 		underlayDBBalanceKey := append(append([]byte("SYSTEM_CONTRACT_DPOS_ERC20"), '#'), balanceKey...)
