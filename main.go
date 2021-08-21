@@ -37,7 +37,11 @@ func main() {
 			fmt.Printf("query acc[%s] balance from db failed, reason: %s", accAddr, err)
 			continue
 		}
-		balance, ok := big.NewInt(0).SetString(string(val), 10)
+		amount := "0"
+		if len(val) == 0 {
+			amount = string(val)
+		}
+		balance, ok := big.NewInt(0).SetString(amount, 10)
 		if !ok {
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
