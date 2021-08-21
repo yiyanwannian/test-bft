@@ -8,21 +8,21 @@ import (
 )
 
 func main() {
-	var(
-		step int
-		dbPath string
+	var (
+		step    int
+		dbPath  string
 		accAddr string
 	)
 	flag.IntVar(&step, "step", 0, "0: modify amount; 1: recovery amount")
 	flag.StringVar(&dbPath, "db_path", "", "db of the path")
 	flag.StringVar(&accAddr, "user_addr", "", "acc of the addr")
 	flag.Parse()
-	if len(dbPath) == 0 || len(accAddr) == 0{
+	if len(dbPath) == 0 || len(accAddr) == 0 {
 		panic(fmt.Sprintf("db_path[%s] or user_addr[%s] is null", dbPath, accAddr))
 	}
 
 	// 1. open db and init key
-	for i := 0; i <= 9; i++{
+	for i := 0; i <= 9; i++ {
 		db, err := leveldb.OpenFile(fmt.Sprintf("%s/%d", dbPath, i), nil)
 		if err != nil {
 			fmt.Println("open db err: ", err)
@@ -33,7 +33,8 @@ func main() {
 
 		// 2. get the balance from db
 		val, err := db.Get(underlayDBBalanceKey, nil)
-		if err != nil {
+		if err != nil && err != leveldb.ErrNotFound {
+			fmt.Printf("query acc[%s] balance from db failed, reason: %s", accAddr, err)
 			continue
 		}
 		balance, ok := big.NewInt(0).SetString(string(val), 10)
@@ -43,11 +44,11 @@ func main() {
 		fmt.Printf("before update balance: %s\n", balance.String())
 
 		// 3. update the balance in the db
-		if step == 0{
+		if step == 0 {
 			if err = db.Put(underlayDBBalanceKey, []byte("0"), nil); err != nil {
 				continue
 			}
-		}else if step ==1{
+		} else if step == 1 {
 			if err = db.Put(underlayDBBalanceKey, []byte("10"), nil); err != nil {
 				continue
 			}
@@ -61,11 +62,11 @@ func main() {
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
 		fmt.Printf("after update balance: %s\n", balance.String())
-		if step == 0{
+		if step == 0 {
 			if balance.Int64() != 0 {
 				panic(fmt.Sprintf("amount mismatch, expect: %d, actual: %d", 0, balance.Int64()))
 			}
-		}else if step == 1{
+		} else if step == 1 {
 			if balance.Int64() != 10 {
 				panic(fmt.Sprintf("amount mismatch, expect: %d, actual: %d", 10, balance.Int64()))
 			}
