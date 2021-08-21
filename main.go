@@ -38,7 +38,7 @@ func main() {
 			continue
 		}
 		amount := "0"
-		if len(val) == 0 {
+		if len(val) != 0 {
 			amount = string(val)
 		}
 		balance, ok := big.NewInt(0).SetString(amount, 10)
