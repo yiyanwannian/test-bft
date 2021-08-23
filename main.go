@@ -49,7 +49,7 @@ func main() {
 
 		// 3. update the balance in the db
 		if step == 0 {
-			if err = db.Put(underlayDBBalanceKey, []byte("0"), nil); err != nil {
+			if err = db.Delete(underlayDBBalanceKey, nil); err != nil {
 				continue
 			}
 		} else if step == 1 {
@@ -59,9 +59,17 @@ func main() {
 		}
 
 		// 4. check update balance
-		if val, err = db.Get(underlayDBBalanceKey, nil); err != nil {
-			panic(fmt.Sprintf("get balance failed, error: %s", err))
+		if step == 0 {
+			if val, err = db.Get(underlayDBBalanceKey, nil); err != leveldb.ErrNotFound {
+				panic(fmt.Sprintf("get balance should get not found error, but get another error: %s", err))
+			}
+			val = []byte("0")
+		} else if step == 1 {
+			if val, err = db.Get(underlayDBBalanceKey, nil); err != nil {
+				panic(fmt.Sprintf("get balance failed, error: %s", err))
+			}
 		}
+
 		if balance, ok = big.NewInt(0).SetString(string(val), 10); !ok {
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
@@ -75,7 +83,6 @@ func main() {
 				panic(fmt.Sprintf("amount mismatch, expect: %d, actual: %d", 10, balance.Int64()))
 			}
 		}
-
 	}
 
 }
