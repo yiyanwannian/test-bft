@@ -23,7 +23,7 @@ func main() {
 	}
 	if info, err := os.Stat(dbPath); err != nil {
 		panic(err)
-	} else if info.IsDir() {
+	} else if !info.IsDir() {
 		panic("should pass dir path")
 	}
 
