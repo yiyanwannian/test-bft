@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/syndtr/goleveldb/leveldb"
 	"math/big"
+	"os"
 )
 
 func main() {
@@ -20,7 +21,13 @@ func main() {
 	if len(dbPath) == 0 || len(accAddr) == 0 {
 		panic(fmt.Sprintf("db_path[%s] or user_addr[%s] is null", dbPath, accAddr))
 	}
+	if info, err := os.Stat(dbPath); err != nil {
+		panic(err)
+	} else if info.IsDir() {
+		panic("should pass dir path")
+	}
 
+	var oncePrint bool
 	// 1. open db and init key
 	for i := 0; i <= 9; i++ {
 		db, err := leveldb.OpenFile(fmt.Sprintf("%s/%d", dbPath, i), nil)
@@ -45,7 +52,9 @@ func main() {
 		if !ok {
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
-		fmt.Printf("before update balance: %s\n", balance.String())
+		if !oncePrint {
+			fmt.Printf("before update balance: %s\n", balance.String())
+		}
 
 		// 3. update the balance in the db
 		if step == 0 {
@@ -73,7 +82,11 @@ func main() {
 		if balance, ok = big.NewInt(0).SetString(string(val), 10); !ok {
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
-		fmt.Printf("after update balance: %s\n", balance.String())
+		if !oncePrint {
+			fmt.Printf("after update balance: %s\n", balance.String())
+		}
+		oncePrint = true
+
 		if step == 0 {
 			if balance.Int64() != 0 {
 				panic(fmt.Sprintf("amount mismatch, expect: %d, actual: %d", 0, balance.Int64()))
@@ -84,5 +97,4 @@ func main() {
 			}
 		}
 	}
-
 }
