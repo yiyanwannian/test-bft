@@ -48,7 +48,7 @@ func main() {
 		if len(val) != 0 {
 			amount = string(val)
 		}
-		balance, ok := big.NewInt(0).SetString(amount, 10)
+		balance, ok := big.NewInt(0).SetString(amount, 100)
 		if !ok {
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
@@ -62,7 +62,7 @@ func main() {
 				continue
 			}
 		} else if step == 1 {
-			if err = db.Put(underlayDBBalanceKey, []byte("10"), nil); err != nil {
+			if err = db.Put(underlayDBBalanceKey, []byte("100"), nil); err != nil {
 				continue
 			}
 		}
@@ -79,7 +79,7 @@ func main() {
 			}
 		}
 
-		if balance, ok = big.NewInt(0).SetString(string(val), 10); !ok {
+		if balance, ok = big.NewInt(0).SetString(string(val), 100); !ok {
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
 		if !oncePrint {
