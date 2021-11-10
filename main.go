@@ -92,8 +92,8 @@ func main() {
 				panic(fmt.Sprintf("amount mismatch, expect: %d, actual: %d", 0, balance.Int64()))
 			}
 		} else if step == 1 {
-			if balance.Int64() != 10 {
-				panic(fmt.Sprintf("amount mismatch, expect: %d, actual: %d", 10, balance.Int64()))
+			if balance.Int64() != 100 {
+				panic(fmt.Sprintf("amount mismatch, expect: %d, actual: %d", 100, balance.Int64()))
 			}
 		}
 	}
