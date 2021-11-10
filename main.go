@@ -48,7 +48,7 @@ func main() {
 		if len(val) != 0 {
 			amount = string(val)
 		}
-		balance, ok := big.NewInt(0).SetString(amount, 100)
+		balance, ok := big.NewInt(0).SetString(amount, 10)
 		if !ok {
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
@@ -79,7 +79,7 @@ func main() {
 			}
 		}
 
-		if balance, ok = big.NewInt(0).SetString(string(val), 100); !ok {
+		if balance, ok = big.NewInt(0).SetString(string(val), 10); !ok {
 			panic(fmt.Sprintf("covert balance bytes[%s] to big.Int failed", balance))
 		}
 		if !oncePrint {
