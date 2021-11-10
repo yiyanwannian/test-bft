@@ -13,10 +13,12 @@ func main() {
 		step    int
 		dbPath  string
 		accAddr string
+		contrnm string
 	)
 	flag.IntVar(&step, "step", 0, "0: modify amount; 1: recovery amount")
 	flag.StringVar(&dbPath, "db_path", "", "db of the path")
 	flag.StringVar(&accAddr, "user_addr", "", "acc of the addr")
+	flag.StringVar(&contrnm, "contract_name", "", "name of the contract")
 	flag.Parse()
 	if len(dbPath) == 0 || len(accAddr) == 0 {
 		panic(fmt.Sprintf("db_path[%s] or user_addr[%s] is null", dbPath, accAddr))
@@ -35,8 +37,9 @@ func main() {
 			fmt.Println("open db err: ", err)
 			continue
 		}
-		balanceKey := fmt.Sprintf("B/%s", accAddr)
-		underlayDBBalanceKey := append(append([]byte("SYSTEM_CONTRACT_DPOS_ERC20"), '#'), balanceKey...)
+		//balanceKey := fmt.Sprintf("B/%s", accAddr)
+		balanceKey := fmt.Sprintf("%s#balance"", accAddr) //address+"#balance"
+		underlayDBBalanceKey := append(append([]byte(contrnm), '#'), balanceKey...)
 
 		// 2. get the balance from db
 		val, err := db.Get(underlayDBBalanceKey, nil)
