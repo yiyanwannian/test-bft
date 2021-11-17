@@ -43,9 +43,11 @@ func main() {
 	defer db.Close()
 	fmt.Println(fmt.Sprintf("opened tikv: %s, and cluser id: %d", endpoint, db.ClusterID()))
 
-	//balanceKey := fmt.Sprintf("B/%s", accAddr)
-	balanceKey := fmt.Sprintf("%s#balance", accAddr) //address+"#balance"
-	underlayDBBalanceKey := append(append([]byte(contrnm), '#'), balanceKey...)
+	//balanceKey := fmt.Sprintf("%s#balance", accAddr) //address+"#balance"
+	//underlayDBBalanceKey := append(append([]byte(contrnm), '#'), balanceKey...)
+
+	balanceKey := fmt.Sprintf("B/%s", accAddr)
+	underlayDBBalanceKey := append(append([]byte("SYSTEM_CONTRACT_DPOS_ERC20"), '#'), balanceKey...)
 
 	// 2. get the balance from db
 	val, err := db.Get(ctx, underlayDBBalanceKey)
