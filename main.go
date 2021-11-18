@@ -16,12 +16,14 @@ func main() {
 		step    int
 		endpoint  string
 		accAddr string
-		contrnm string
+		//contrnm string
+		preKey string
 	)
 	flag.IntVar(&step, "step", 0, "0: modify amount; 1: recovery amount")
 	flag.StringVar(&endpoint, "endpoint", "", "endpoint of the tikv pds")
 	flag.StringVar(&accAddr, "user_addr", "", "acc of the addr")
-	flag.StringVar(&contrnm, "contract_name", "", "name of the contract")
+	//flag.StringVar(&contrnm, "contract_name", "", "name of the contract")
+	flag.StringVar(&preKey, "prefix_key", "", "prefix of the tikv key")
 	flag.Parse()
 
 	var oncePrint bool
@@ -47,7 +49,8 @@ func main() {
 	//underlayDBBalanceKey := append(append([]byte(contrnm), '#'), balanceKey...)
 
 	balanceKey := fmt.Sprintf("B/%s", accAddr)
-	underlayDBBalanceKey := append(append([]byte("SYSTEM_CONTRACT_DPOS_ERC20"), '#'), balanceKey...)
+	contact_name := fmt.Sprintf("%s#SYSTEM_CONTRACT_DPOS_ERC20", preKey)
+	underlayDBBalanceKey := append(append([]byte(contact_name), '#'), balanceKey...)
 
 	// 2. get the balance from db
 	val, err := db.Get(ctx, underlayDBBalanceKey)
