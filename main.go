@@ -9,6 +9,8 @@ import (
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
+// eg: -db_path yourdatapath/data/wx-org1.chainmaker.org/state/chain1/store_state -step 1 -user_addr FvgKhDjcmnKi8TzKGCiXFt6umiBysY36xKuCYQrYmk2e -contract_name DPOS_ERC20
+
 func main() {
 	var (
 		step    int
@@ -37,8 +39,8 @@ func main() {
 		fmt.Println("open db err: ", err)
 		return
 	}
-	//balanceKey := fmt.Sprintf("B/%s", accAddr)
-	balanceKey := fmt.Sprintf("%s#balance", accAddr) //address+"#balance"
+	balanceKey := fmt.Sprintf("B/%s", accAddr)
+	//balanceKey := fmt.Sprintf("%s#balance", accAddr) //address+"#balance"
 	underlayDBBalanceKey := append(append([]byte(contrnm), '#'), balanceKey...)
 
 	// 2. get the balance from db
